@@ -4,6 +4,7 @@
 
 import mne
 import numpy as np
+import colorednoise as cn
 
 from osl.source_recon import setup_fsl
 from osl.source_recon.beamforming import get_leadfields
@@ -35,11 +36,21 @@ for voxel in range(n_voxels):
 # Simulate voxel data
 n_samples = 25600
 t = np.arange(n_samples) / 250
-voxel_data = np.random.normal(0, 1e-12, (n_voxels, n_samples))
+voxel_data = 1e-12 * cn.powerlaw_psd_gaussian(exponent=1, size=(n_voxels, n_samples))
+
+# Visual activity
 for parcel in [0, 1, 2, 3, 24, 25]:
     A = 1e-12 * np.random.uniform(0.8, 1.2)
     f = np.random.uniform(9.97, 10.03)
-    phi = np.random.uniform(-0.1 * np.pi, 0.1 * np.pi)
+    phi = np.random.uniform(-0.2 * np.pi, 0.2 * np.pi)
+    parcel_mask = voxel_assignments[:, parcel].astype(bool)
+    voxel_data[parcel_mask,:] += A * np.sin(2 * np.pi * f * t + phi)
+
+# Motor activity
+for parcel in [8, 9, 18, 19]:
+    A = 5e-13 * np.random.uniform(0.8, 1.2)
+    f = np.random.uniform(19.95, 20.05)
+    phi = np.random.uniform(-0.2 * np.pi, 0.2 * np.pi)
     parcel_mask = voxel_assignments[:, parcel].astype(bool)
     voxel_data[parcel_mask,:] += A * np.sin(2 * np.pi * f * t + phi)
 
