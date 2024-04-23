@@ -30,7 +30,9 @@ for parcel in range(n_parcels):
 
 voxel_assignments = np.zeros_like(parcellation)
 for voxel in range(n_voxels):
-    winning_parcel = np.argmax(parcellation[voxel, :])
+    if np.all(parcellation[voxel] == 0):
+        continue
+    winning_parcel = np.argmax(parcellation[voxel])
     voxel_assignments[voxel, winning_parcel] = 1
 
 # Simulate voxel data
@@ -40,7 +42,7 @@ voxel_data = 1e-12 * cn.powerlaw_psd_gaussian(exponent=1, size=(n_voxels, n_samp
 
 # Visual activity
 for parcel in [0, 1, 2, 3, 24, 25]:
-    A = 1e-12 * np.random.uniform(0.8, 1.2)
+    A = 5e-13 * np.random.uniform(0.8, 1.2)
     f = np.random.uniform(9.97, 10.03)
     phi = np.random.uniform(-0.2 * np.pi, 0.2 * np.pi)
     parcel_mask = voxel_assignments[:, parcel].astype(bool)
@@ -49,7 +51,7 @@ for parcel in [0, 1, 2, 3, 24, 25]:
 # Motor activity
 for parcel in [8, 9, 18, 19]:
     A = 5e-13 * np.random.uniform(0.8, 1.2)
-    f = np.random.uniform(19.95, 20.05)
+    f = np.random.uniform(19.97, 20.03)
     phi = np.random.uniform(-0.2 * np.pi, 0.2 * np.pi)
     parcel_mask = voxel_assignments[:, parcel].astype(bool)
     voxel_data[parcel_mask,:] += A * np.sin(2 * np.pi * f * t + phi)

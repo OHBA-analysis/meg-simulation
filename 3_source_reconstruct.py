@@ -23,7 +23,7 @@ wrappers.beamform(
     preproc_file="data/simulation/sensor-raw.fif",
     smri_file=None,
     epoch_file=None,
-    chantypes="meg",
+    chantypes=["mag", "grad"],
     rank={"meg": 60},
     freq_range=[1, 45],
 )
